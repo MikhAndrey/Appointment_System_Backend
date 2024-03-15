@@ -21,8 +21,12 @@ from Appointment_System_API import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('customer', views.create_customer),
-    path('department', views.create_department),
+    path('customers', views.CustomerView.as_view(http_method_names=['post'])),
+    path('customers/<int:id>', views.CustomerView.as_view(http_method_names=['put', 'delete', 'get'])),
+    path('customers/list', views.CustomerListView.as_view(http_method_names=['get'])),
+    path('departments', views.DepartmentView.as_view(http_method_names=['post'])),
+    path('departments/<int:id>', views.DepartmentView.as_view(http_method_names=['put', 'delete', 'get'])),
+    path('departments/list', views.DepartmentListView.as_view(http_method_names=['get'])),
     path('employee', views.create_employee),
     path('appointment', views.create_appointment)
 ]
