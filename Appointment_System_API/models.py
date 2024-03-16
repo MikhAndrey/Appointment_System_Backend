@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User, Permission
 from django.db import models
 
 
@@ -10,8 +10,7 @@ class Customer(models.Model):
 
 
 class Employee(models.Model):
-    fullname = models.CharField(max_length=100)
-    email = models.EmailField()
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     phone = models.CharField(max_length=20)
     address = models.CharField(max_length=200)
     department = models.ForeignKey('Department', on_delete=models.CASCADE)
@@ -28,3 +27,9 @@ class Appointment(models.Model):
     end = models.TimeField()
     employee = models.ForeignKey('Employee', on_delete=models.CASCADE)
     customer = models.ForeignKey('Customer', on_delete=models.CASCADE)
+
+    class Meta:
+        permissions = [
+            ('view_own_appointment', 'Can view own appointment'),
+            ('view_other_appointment', 'Can view other appointment')
+        ]
