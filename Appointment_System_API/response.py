@@ -2,9 +2,10 @@ from django.core.paginator import Page, Paginator
 
 
 class Response:
-    def __init__(self, model=None, message=None):
+    def __init__(self, model=None, message=None, errors=None):
         self.model = model
         self.message = message
+        self.errors = errors
 
 
 class PageResponse:
