@@ -1,13 +1,12 @@
 import json
 
-from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.http import JsonResponse
 from django.views import View
 from rest_framework import serializers
 
-from Appointment_System_API.auth.permissions import has_permission
+from Appointment_System_API.auth.permissions import has_permission, user_has_permission
 from Appointment_System_API.models import Customer, Department, Employee, Appointment
 from Appointment_System_API.response import Response, PageResponse
 from Appointment_System_API.serializers import CustomerSerializer, DepartmentSerializer, \
@@ -181,10 +180,13 @@ class DepartmentListView(View):
 
 class AppointmentView(View):
     @staticmethod
-    @has_permission('view_appointment')
+    @has_permission('view_own_appointment')
     def get(request, id):
         try:
-            appointment = Appointment.objects.get(id=id)
+            if user_has_permission(request.user, 'view_other_appointment'):
+                appointment = Appointment.objects.get(id=id)
+            else:
+                appointment = Appointment.objects.get(id=id, employee=request.user.employee)
             serializer = AppointmentGetSerializer(appointment)
             response = Response(model=serializer.data, message="Appointment was retrieved successfully")
             return JsonResponse(response.__dict__, status=200)
@@ -246,9 +248,12 @@ class AppointmentView(View):
 
 class AppointmentListView(View):
     @staticmethod
-    @has_permission('view_appointment')
+    @has_permission('view_own_appointment')
     def get(request):
-        queryset = Appointment.objects.all().order_by('id')
+        if user_has_permission(request.user, 'view_other_appointment'):
+            queryset = Appointment.objects.all().order_by('id')
+        else:
+            queryset = Appointment.objects.filter(employee=request.user.employee).order_by('id')
         page_number = request.GET.get('pageNumber')
         per_page = request.GET.get('pageSize')
         paginator = Paginator(queryset, per_page)
