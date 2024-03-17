@@ -9,8 +9,7 @@ from rest_framework import serializers
 from Appointment_System_API.models import Customer, Department, Employee, Appointment
 from Appointment_System_API.response import Response, PageResponse
 from Appointment_System_API.serializers import CustomerSerializer, DepartmentSerializer, \
-    EmployeeGetSerializer, AppointmentGetSerializer, \
-    EmployeeUpdateSerializer, AppointmentCreateSerializer, EmployeeCreateSerializer
+    EmployeeGetSerializer, AppointmentGetSerializer, AppointmentSerializer, EmployeeSerializer
 
 
 class CustomerView(View):
@@ -172,7 +171,7 @@ class AppointmentView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            serializer = AppointmentCreateSerializer(data=data)
+            serializer = AppointmentSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
                 response = Response(model=serializer.data, message="Appointment was created successfully")
@@ -189,7 +188,7 @@ class AppointmentView(View):
             data = json.loads(request.body)
 
             appointment = Appointment.objects.get(id=id)
-            serializer = AppointmentCreateSerializer(instance=appointment, data=data)
+            serializer = AppointmentSerializer(instance=appointment, data=data)
             if serializer.is_valid():
                 serializer.save()
                 response = Response(model=serializer.data, message="Appointment was updated successfully")
@@ -252,7 +251,7 @@ class EmployeeView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            serializer = EmployeeCreateSerializer(data=data)
+            serializer = EmployeeSerializer(data=data)
             if serializer.is_valid():
                 employee = serializer.save()
                 serializer = EmployeeGetSerializer(employee)
@@ -274,7 +273,7 @@ class EmployeeView(View):
             data = json.loads(request.body)
 
             employee = Employee.objects.get(id=id)
-            serializer = EmployeeUpdateSerializer(instance=employee, data=data)
+            serializer = EmployeeSerializer(instance=employee, data=data)
             if serializer.is_valid():
                 employee = serializer.save()
                 serializer = EmployeeGetSerializer(employee)

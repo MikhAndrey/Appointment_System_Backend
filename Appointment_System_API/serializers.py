@@ -19,7 +19,28 @@ class DepartmentSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class AppointmentCreateSerializer(serializers.ModelSerializer):
+class AppointmentGetSerializer(serializers.ModelSerializer):
+    employee = serializers.SerializerMethodField()
+    customer = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Appointment
+        fields = ['id', 'date', 'start', 'end', 'employee', 'customer']
+
+    def get_employee(self, obj: Appointment):
+        return {
+            "id": obj.employee.id,
+            "fullname": obj.employee.user.username
+        }
+
+    def get_customer(self, obj: Appointment):
+        return {
+            "id": obj.customer.id,
+            "fullname": obj.customer.fullname
+        }
+
+
+class AppointmentSerializer(serializers.ModelSerializer):
     employeeId = serializers.PrimaryKeyRelatedField(source='employee', queryset=Employee.objects.all())
     employeeId.default_error_messages['does_not_exist'] = 'Employee was not found'
 
@@ -48,7 +69,7 @@ class EmployeeGetSerializer(serializers.ModelSerializer):
         }
 
 
-class EmployeeCreateSerializer(serializers.ModelSerializer):
+class EmployeeSerializer(serializers.ModelSerializer):
     departmentId = serializers.PrimaryKeyRelatedField(source='department', queryset=Department.objects.all())
     departmentId.default_error_messages['does_not_exist'] = 'Department was not found'
 
@@ -92,19 +113,6 @@ class EmployeeCreateSerializer(serializers.ModelSerializer):
 
         return employee
 
-
-class EmployeeUpdateSerializer(serializers.ModelSerializer):
-    departmentId = serializers.PrimaryKeyRelatedField(source='department', queryset=Department.objects.all())
-    departmentId.default_error_messages['does_not_exist'] = 'Department was not found'
-
-    email = serializers.EmailField()
-    fullname = serializers.CharField()
-    roles = serializers.ListField(child=serializers.CharField())
-
-    class Meta:
-        model = Employee
-        fields = ['email', 'fullname', 'roles', 'phone', 'address', 'departmentId']
-
     def update(self, instance: Employee, validated_data):
         instance.user.email = validated_data['email']
         instance.user.username = validated_data['fullname']
@@ -123,24 +131,3 @@ class EmployeeUpdateSerializer(serializers.ModelSerializer):
         instance.save()
         instance.user.save()
         return instance
-
-
-class AppointmentGetSerializer(serializers.ModelSerializer):
-    employee = serializers.SerializerMethodField()
-    customer = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Appointment
-        fields = ['id', 'date', 'start', 'end', 'employee', 'customer']
-
-    def get_employee(self, obj: Appointment):
-        return {
-            "id": obj.employee.id,
-            "fullname": obj.employee.user.username
-        }
-
-    def get_customer(self, obj: Appointment):
-        return {
-            "id": obj.customer.id,
-            "fullname": obj.customer.fullname
-        }
