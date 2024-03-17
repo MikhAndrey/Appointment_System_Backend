@@ -40,7 +40,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'Appointment_System_API'
+    'Appointment_System_API',
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist'
 ]
 
 MIDDLEWARE = [
@@ -49,6 +51,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'Appointment_System_API.auth.middleware.JWTAuthenticationMiddleware'
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -84,9 +87,12 @@ SIMPLE_JWT = {
     "ROTATE_REFRESH_TOKENS": os.getenv('ROTATE_REFRESH_TOKENS'),
     "BLACKLIST_AFTER_ROTATION": os.getenv('BLACKLIST_AFTER_ROTATION'),
     "UPDATE_LAST_LOGIN": os.getenv('UPDATE_LAST_LOGIN'),
+    "USER_ID_CLAIM": "userId",
+    "ALGORITHM": os.getenv('ALGORITHM'),
     "SIGNING_KEY": os.getenv('SIGNING_KEY'),
     "AUDIENCE": os.getenv('AUDIENCE'),
     "ISSUER": os.getenv('ISSUER'),
+    "TOKEN_OBTAIN_SERIALIZER": "Appointment_System_API.auth.serializers.CustomTokenObtainPairSerializer",
 }
 
 WSGI_APPLICATION = 'Appointment_System_Backend.wsgi.application'

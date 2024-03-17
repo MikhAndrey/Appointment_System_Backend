@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.decorators import permission_required
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.http import JsonResponse
@@ -13,7 +14,9 @@ from Appointment_System_API.serializers import CustomerSerializer, DepartmentSer
 
 
 class CustomerView(View):
-    def get(self, request, id):
+    @staticmethod
+    @permission_required('view_customer')
+    def get(request, id):
         try:
             customer = Customer.objects.get(id=id)
             serializer = CustomerSerializer(customer)
@@ -23,7 +26,9 @@ class CustomerView(View):
             response = Response(message="Customer was not found")
             return JsonResponse(response.__dict__, status=400)
 
-    def post(self, request):
+    @staticmethod
+    @permission_required('add_customer')
+    def post(request):
         try:
             data = json.loads(request.body)
             serializer = CustomerSerializer(data=data)
@@ -38,7 +43,9 @@ class CustomerView(View):
             response = Response(message="Invalid JSON")
             return JsonResponse(response.__dict__, status=400)
 
-    def put(self, request, id):
+    @staticmethod
+    @permission_required('change_customer')
+    def put(request, id):
         try:
             data = json.loads(request.body)
 
@@ -58,7 +65,9 @@ class CustomerView(View):
             response = Response(message="Invalid JSON")
             return JsonResponse(response.__dict__, status=400)
 
-    def delete(self, request, id):
+    @staticmethod
+    @permission_required('delete_customer')
+    def delete(request, id):
         try:
             customer = Customer.objects.get(id=id)
             customer.delete()
@@ -70,7 +79,9 @@ class CustomerView(View):
 
 
 class CustomerListView(View):
-    def get(self, request):
+    @staticmethod
+    @permission_required('view_customer')
+    def get(request):
         queryset = Customer.objects.all().order_by('id')
         page_number = request.GET.get('pageNumber')
         per_page = request.GET.get('pageSize')
@@ -92,7 +103,9 @@ class CustomerListView(View):
 
 
 class DepartmentView(View):
-    def get(self, request, id):
+    @staticmethod
+    @permission_required('view_department')
+    def get(request, id):
         try:
             department = Department.objects.get(id=id)
             serializer = DepartmentSerializer(department)
@@ -102,7 +115,9 @@ class DepartmentView(View):
             response = Response(message="Department was not found")
             return JsonResponse(response.__dict__, status=400)
 
-    def post(self, request):
+    @staticmethod
+    @permission_required('add_department')
+    def post(request):
         try:
             data = json.loads(request.body)
             serializer = DepartmentSerializer(data=data)
@@ -117,7 +132,9 @@ class DepartmentView(View):
             response = Response(message="Invalid JSON")
             return JsonResponse(response.__dict__, status=400)
 
-    def put(self, request, id):
+    @staticmethod
+    @permission_required('change_department')
+    def put(request, id):
         try:
             data = json.loads(request.body)
 
@@ -137,7 +154,9 @@ class DepartmentView(View):
             response = Response(message="Invalid JSON")
             return JsonResponse(response.__dict__, status=400)
 
-    def delete(self, request, id):
+    @staticmethod
+    @permission_required('delete_department')
+    def delete(request, id):
         try:
             department = Department.objects.get(id=id)
             department.delete()
@@ -149,7 +168,9 @@ class DepartmentView(View):
 
 
 class DepartmentListView(View):
-    def get(self, request):
+    @staticmethod
+    @permission_required('view_department')
+    def get(request):
         queryset = Department.objects.all()
         serializer = DepartmentSerializer(queryset, many=True)
         response = Response(model=serializer.data,
@@ -158,7 +179,9 @@ class DepartmentListView(View):
 
 
 class AppointmentView(View):
-    def get(self, request, id):
+    @staticmethod
+    @permission_required('view_appointment')
+    def get(request, id):
         try:
             appointment = Appointment.objects.get(id=id)
             serializer = AppointmentGetSerializer(appointment)
@@ -168,7 +191,9 @@ class AppointmentView(View):
             response = Response(message="Appointment was not found")
             return JsonResponse(response.__dict__, status=400)
 
-    def post(self, request):
+    @staticmethod
+    @permission_required('add_appointment')
+    def post(request):
         try:
             data = json.loads(request.body)
             serializer = AppointmentSerializer(data=data)
@@ -183,7 +208,9 @@ class AppointmentView(View):
             response = Response(message="Invalid JSON")
             return JsonResponse(response.__dict__, status=400)
 
-    def put(self, request, id):
+    @staticmethod
+    @permission_required('change_appointment')
+    def put(request, id):
         try:
             data = json.loads(request.body)
 
@@ -203,7 +230,9 @@ class AppointmentView(View):
             response = Response(message="Invalid JSON")
             return JsonResponse(response.__dict__, status=400)
 
-    def delete(self, request, id):
+    @staticmethod
+    @permission_required('delete_appointment')
+    def delete(request, id):
         try:
             department = Appointment.objects.get(id=id)
             department.delete()
@@ -215,7 +244,9 @@ class AppointmentView(View):
 
 
 class AppointmentListView(View):
-    def get(self, request):
+    @staticmethod
+    @permission_required('view_appointment')
+    def get(request):
         queryset = Appointment.objects.all().order_by('id')
         page_number = request.GET.get('pageNumber')
         per_page = request.GET.get('pageSize')
@@ -237,7 +268,9 @@ class AppointmentListView(View):
 
 
 class EmployeeView(View):
-    def get(self, request, id):
+    @staticmethod
+    @permission_required('view_employee')
+    def get(request, id):
         try:
             employee = Employee.objects.get(id=id)
             serializer = EmployeeGetSerializer(employee)
@@ -247,8 +280,10 @@ class EmployeeView(View):
             response = Response(message="Employee was not found")
             return JsonResponse(response.__dict__, status=400)
 
+    @staticmethod
+    @permission_required('add_employee')
     @transaction.atomic
-    def post(self, request):
+    def post(request):
         try:
             data = json.loads(request.body)
             serializer = EmployeeSerializer(data=data)
@@ -267,8 +302,10 @@ class EmployeeView(View):
             response = Response(errors=e.detail)
             return JsonResponse(response.__dict__, status=400)
 
+    @staticmethod
+    @permission_required('change_employee')
     @transaction.atomic
-    def put(self, request, id):
+    def put(request, id):
         try:
             data = json.loads(request.body)
 
@@ -292,7 +329,9 @@ class EmployeeView(View):
             response = Response(errors=e.detail)
             return JsonResponse(response.__dict__, status=400)
 
-    def delete(self, request, id):
+    @staticmethod
+    @permission_required('delete_employee')
+    def delete(request, id):
         try:
             employee = Employee.objects.get(id=id)
             employee.delete()
@@ -305,7 +344,9 @@ class EmployeeView(View):
 
 
 class EmployeeListView(View):
-    def get(self, request):
+    @staticmethod
+    @permission_required('view_employee')
+    def get(request):
         queryset = Employee.objects.all()
         serializer = EmployeeGetSerializer(queryset, many=True)
         response = Response(model=serializer.data,
