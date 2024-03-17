@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from django.views import View
 from rest_framework import serializers
 
+from Appointment_System_API.auth.permissions import has_permission
 from Appointment_System_API.models import Customer, Department, Employee, Appointment
 from Appointment_System_API.response import Response, PageResponse
 from Appointment_System_API.serializers import CustomerSerializer, DepartmentSerializer, \
@@ -15,7 +16,7 @@ from Appointment_System_API.serializers import CustomerSerializer, DepartmentSer
 
 class CustomerView(View):
     @staticmethod
-    @permission_required('view_customer')
+    @has_permission('view_customer')
     def get(request, id):
         try:
             customer = Customer.objects.get(id=id)
@@ -27,7 +28,7 @@ class CustomerView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('add_customer')
+    @has_permission('add_customer')
     def post(request):
         try:
             data = json.loads(request.body)
@@ -44,7 +45,7 @@ class CustomerView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('change_customer')
+    @has_permission('change_customer')
     def put(request, id):
         try:
             data = json.loads(request.body)
@@ -66,7 +67,7 @@ class CustomerView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('delete_customer')
+    @has_permission('delete_customer')
     def delete(request, id):
         try:
             customer = Customer.objects.get(id=id)
@@ -80,7 +81,7 @@ class CustomerView(View):
 
 class CustomerListView(View):
     @staticmethod
-    @permission_required('view_customer')
+    @has_permission('view_customer')
     def get(request):
         queryset = Customer.objects.all().order_by('id')
         page_number = request.GET.get('pageNumber')
@@ -104,7 +105,7 @@ class CustomerListView(View):
 
 class DepartmentView(View):
     @staticmethod
-    @permission_required('view_department')
+    @has_permission('view_department')
     def get(request, id):
         try:
             department = Department.objects.get(id=id)
@@ -116,7 +117,7 @@ class DepartmentView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('add_department')
+    @has_permission('add_department')
     def post(request):
         try:
             data = json.loads(request.body)
@@ -133,7 +134,7 @@ class DepartmentView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('change_department')
+    @has_permission('change_department')
     def put(request, id):
         try:
             data = json.loads(request.body)
@@ -155,7 +156,7 @@ class DepartmentView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('delete_department')
+    @has_permission('delete_department')
     def delete(request, id):
         try:
             department = Department.objects.get(id=id)
@@ -169,7 +170,7 @@ class DepartmentView(View):
 
 class DepartmentListView(View):
     @staticmethod
-    @permission_required('view_department')
+    @has_permission('view_department')
     def get(request):
         queryset = Department.objects.all()
         serializer = DepartmentSerializer(queryset, many=True)
@@ -180,7 +181,7 @@ class DepartmentListView(View):
 
 class AppointmentView(View):
     @staticmethod
-    @permission_required('view_appointment')
+    @has_permission('view_appointment')
     def get(request, id):
         try:
             appointment = Appointment.objects.get(id=id)
@@ -192,7 +193,7 @@ class AppointmentView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('add_appointment')
+    @has_permission('add_appointment')
     def post(request):
         try:
             data = json.loads(request.body)
@@ -209,7 +210,7 @@ class AppointmentView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('change_appointment')
+    @has_permission('change_appointment')
     def put(request, id):
         try:
             data = json.loads(request.body)
@@ -231,7 +232,7 @@ class AppointmentView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('delete_appointment')
+    @has_permission('delete_appointment')
     def delete(request, id):
         try:
             department = Appointment.objects.get(id=id)
@@ -245,7 +246,7 @@ class AppointmentView(View):
 
 class AppointmentListView(View):
     @staticmethod
-    @permission_required('view_appointment')
+    @has_permission('view_appointment')
     def get(request):
         queryset = Appointment.objects.all().order_by('id')
         page_number = request.GET.get('pageNumber')
@@ -269,7 +270,7 @@ class AppointmentListView(View):
 
 class EmployeeView(View):
     @staticmethod
-    @permission_required('view_employee')
+    @has_permission('view_employee')
     def get(request, id):
         try:
             employee = Employee.objects.get(id=id)
@@ -281,7 +282,7 @@ class EmployeeView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('add_employee')
+    @has_permission('add_employee')
     @transaction.atomic
     def post(request):
         try:
@@ -303,7 +304,7 @@ class EmployeeView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('change_employee')
+    @has_permission('change_employee')
     @transaction.atomic
     def put(request, id):
         try:
@@ -330,7 +331,7 @@ class EmployeeView(View):
             return JsonResponse(response.__dict__, status=400)
 
     @staticmethod
-    @permission_required('delete_employee')
+    @has_permission('delete_employee')
     def delete(request, id):
         try:
             employee = Employee.objects.get(id=id)
@@ -345,7 +346,7 @@ class EmployeeView(View):
 
 class EmployeeListView(View):
     @staticmethod
-    @permission_required('view_employee')
+    @has_permission('view_employee')
     def get(request):
         queryset = Employee.objects.all()
         serializer = EmployeeGetSerializer(queryset, many=True)
