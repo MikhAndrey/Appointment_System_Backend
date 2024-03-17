@@ -9,12 +9,15 @@ https://docs.djangoproject.com/en/5.0/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.0/ref/settings/
 """
-
+import os
+from datetime import timedelta
+from dotenv import load_dotenv
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -69,6 +72,23 @@ TEMPLATES = [
     },
 ]
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=float(os.getenv('ACCESS_TOKEN_LIFETIME'))),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=float(os.getenv('REFRESH_TOKEN_LIFETIME'))),
+    "ROTATE_REFRESH_TOKENS": os.getenv('ROTATE_REFRESH_TOKENS'),
+    "BLACKLIST_AFTER_ROTATION": os.getenv('BLACKLIST_AFTER_ROTATION'),
+    "UPDATE_LAST_LOGIN": os.getenv('UPDATE_LAST_LOGIN'),
+    "SIGNING_KEY": os.getenv('SIGNING_KEY'),
+    "AUDIENCE": os.getenv('AUDIENCE'),
+    "ISSUER": os.getenv('ISSUER'),
+}
+
 WSGI_APPLICATION = 'Appointment_System_Backend.wsgi.application'
 
 
@@ -78,11 +98,11 @@ WSGI_APPLICATION = 'Appointment_System_Backend.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'appointment_system',
-        'USER': 'root',
-        'PASSWORD': 'PassworddrowssaP',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
+        'NAME': os.getenv('DATABASE_NAME'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST'),
+        'PORT': os.getenv('DATABASE_PORT'),
     }
 }
 
@@ -128,8 +148,8 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'mikhalevange@gmail.com'
-EMAIL_HOST_PASSWORD = 'todfhenxlmqnwvvr'
+EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS')
+EMAIL_HOST = os.getenv('EMAIL_HOST')
+EMAIL_PORT = os.getenv('EMAIL_PORT')
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')

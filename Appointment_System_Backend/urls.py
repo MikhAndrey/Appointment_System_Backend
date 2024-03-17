@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 from Appointment_System_API import views
 
@@ -32,5 +33,7 @@ urlpatterns = [
     path('appointments/list', views.AppointmentListView.as_view(http_method_names=['get'])),
     path('employees', views.EmployeeView.as_view(http_method_names=['post'])),
     path('employees/<int:id>', views.EmployeeView.as_view(http_method_names=['put', 'delete', 'get'])),
-    path('employees/list', views.EmployeeListView.as_view(http_method_names=['get']))
+    path('employees/list', views.EmployeeListView.as_view(http_method_names=['get'])),
+    path('token', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
 ]
