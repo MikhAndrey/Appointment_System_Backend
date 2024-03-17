@@ -29,5 +29,8 @@ urlpatterns = [
     path('departments/list', views.DepartmentListView.as_view(http_method_names=['get'])),
     path('appointments', views.AppointmentView.as_view(http_method_names=['post'])),
     path('appointments/<int:id>', views.AppointmentView.as_view(http_method_names=['put', 'delete', 'get'])),
-    path('appointments/list', views.AppointmentListView.as_view(http_method_names=['get']))
+    path('appointments/list', views.AppointmentListView.as_view(http_method_names=['get'])),
+    path('employees', views.EmployeeView.as_view(http_method_names=['post'])),
+    path('employees/<int:id>', views.EmployeeView.as_view(http_method_names=['put', 'delete', 'get'])),
+    path('employees/list', views.EmployeeListView.as_view(http_method_names=['get']))
 ]

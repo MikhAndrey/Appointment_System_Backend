@@ -1,12 +1,16 @@
 import json
 
 from django.core.paginator import Paginator
+from django.db import transaction
 from django.http import JsonResponse
 from django.views import View
+from rest_framework import serializers
 
 from Appointment_System_API.models import Customer, Department, Employee, Appointment
 from Appointment_System_API.response import Response, PageResponse
-from Appointment_System_API.serializers import CustomerSerializer, DepartmentSerializer, AppointmentSerializer
+from Appointment_System_API.serializers import CustomerSerializer, DepartmentSerializer, \
+    EmployeeGetSerializer, AppointmentGetSerializer, \
+    EmployeeUpdateSerializer, AppointmentCreateSerializer, EmployeeCreateSerializer
 
 
 class CustomerView(View):
@@ -158,7 +162,7 @@ class AppointmentView(View):
     def get(self, request, id):
         try:
             appointment = Appointment.objects.get(id=id)
-            serializer = AppointmentSerializer(appointment)
+            serializer = AppointmentGetSerializer(appointment)
             response = Response(model=serializer.data, message="Appointment was retrieved successfully")
             return JsonResponse(response.__dict__, status=200)
         except Appointment.DoesNotExist:
@@ -168,7 +172,7 @@ class AppointmentView(View):
     def post(self, request):
         try:
             data = json.loads(request.body)
-            serializer = AppointmentSerializer(data=data)
+            serializer = AppointmentCreateSerializer(data=data)
             if serializer.is_valid():
                 serializer.save()
                 response = Response(model=serializer.data, message="Appointment was created successfully")
@@ -185,7 +189,7 @@ class AppointmentView(View):
             data = json.loads(request.body)
 
             appointment = Appointment.objects.get(id=id)
-            serializer = AppointmentSerializer(instance=appointment, data=data)
+            serializer = AppointmentCreateSerializer(instance=appointment, data=data)
             if serializer.is_valid():
                 serializer.save()
                 response = Response(model=serializer.data, message="Appointment was updated successfully")
@@ -223,7 +227,7 @@ class AppointmentListView(View):
         except:
             page_obj = paginator.page(1)
 
-        serializer = AppointmentSerializer(page_obj.object_list, many=True)
+        serializer = AppointmentGetSerializer(page_obj.object_list, many=True)
         response = PageResponse(
             model=serializer.data,
             message="Page of appointments was retrieved successfully",
@@ -233,23 +237,78 @@ class AppointmentListView(View):
         return JsonResponse(response.__dict__(), status=200)
 
 
-def create_employee(request):
-    try:
-        data = json.loads(request.body)
+class EmployeeView(View):
+    def get(self, request, id):
+        try:
+            employee = Employee.objects.get(id=id)
+            serializer = EmployeeGetSerializer(employee)
+            response = Response(model=serializer.data, message="Employee was retrieved successfully")
+            return JsonResponse(response.__dict__, status=200)
+        except Employee.DoesNotExist:
+            response = Response(message="Employee was not found")
+            return JsonResponse(response.__dict__, status=400)
 
-        department = Department.objects.get(id=data.get('departmentId'))
+    @transaction.atomic
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            serializer = EmployeeCreateSerializer(data=data)
+            if serializer.is_valid():
+                employee = serializer.save()
+                serializer = EmployeeGetSerializer(employee)
+                response = Response(model=serializer.data, message="Employee was created successfully")
+                return JsonResponse(response.__dict__, status=201)
+            else:
+                response = Response(errors=serializer.errors)
+                return JsonResponse(response.__dict__, status=400)
+        except json.JSONDecodeError:
+            response = Response(message="Invalid JSON")
+            return JsonResponse(response.__dict__, status=400)
+        except serializers.ValidationError as e:
+            response = Response(errors=e.detail)
+            return JsonResponse(response.__dict__, status=400)
 
-        employee = Employee.objects.create(
-            fullname=data.get('fullname'),
-            email=data.get('email'),
-            phone=data.get('phone'),
-            address=data.get('address'),
-            department=department
-        )
-        employee.save()
+    @transaction.atomic
+    def put(self, request, id):
+        try:
+            data = json.loads(request.body)
 
-        return JsonResponse({"message": "Employee created successfully"}, status=201)
-    except json.JSONDecodeError:
-        return JsonResponse({"message": "Invalid JSON"}, status=400)
-    except Department.DoesNotExist:
-        return JsonResponse({"message": "Department was not found"}, status=400)
+            employee = Employee.objects.get(id=id)
+            serializer = EmployeeUpdateSerializer(instance=employee, data=data)
+            if serializer.is_valid():
+                employee = serializer.save()
+                serializer = EmployeeGetSerializer(employee)
+                response = Response(model=serializer.data, message="Employee was updated successfully")
+                return JsonResponse(response.__dict__, status=200)
+            else:
+                response = Response(errors=serializer.errors)
+                return JsonResponse(response.__dict__, status=400)
+        except Employee.DoesNotExist:
+            response = Response(message="Employee was not found")
+            return JsonResponse(response.__dict__, status=400)
+        except json.JSONDecodeError:
+            response = Response(message="Invalid JSON")
+            return JsonResponse(response.__dict__, status=400)
+        except serializers.ValidationError as e:
+            response = Response(errors=e.detail)
+            return JsonResponse(response.__dict__, status=400)
+
+    def delete(self, request, id):
+        try:
+            employee = Employee.objects.get(id=id)
+            employee.delete()
+            employee.user.delete()
+            response = Response(message="Employee was deleted successfully")
+            return JsonResponse(response.__dict__, status=200)
+        except Employee.DoesNotExist:
+            response = Response(message="Employee was not found")
+            return JsonResponse(response.__dict__, status=400)
+
+
+class EmployeeListView(View):
+    def get(self, request):
+        queryset = Employee.objects.all()
+        serializer = EmployeeGetSerializer(queryset, many=True)
+        response = Response(model=serializer.data,
+                            message="List of employees was retrieved successfully")
+        return JsonResponse(response.__dict__, status=200)
