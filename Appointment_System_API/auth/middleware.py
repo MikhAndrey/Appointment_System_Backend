@@ -1,8 +1,10 @@
 from django.conf import LazySettings
+from django.http import JsonResponse
 from django.urls import reverse
 from django.utils.deprecation import MiddlewareMixin
-from rest_framework.response import Response
 from rest_framework_simplejwt.authentication import JWTAuthentication
+
+from Appointment_System_API.response import Response
 
 settings = LazySettings()
 
@@ -17,4 +19,4 @@ class JWTAuthenticationMiddleware(MiddlewareMixin):
                 user, token = response
                 request.user = user
             else:
-                return Response('Unauthorized', status=401)
+                return JsonResponse(Response(message='Unauthorized').__dict__, status=401)
