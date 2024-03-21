@@ -13,10 +13,13 @@ class JWTAuthenticationMiddleware(MiddlewareMixin):
     def process_request(self, request):
         excluded_urls = [reverse('token_obtain_pair'), reverse('token_refresh')]
         if request.path not in excluded_urls:
-            authenticator = JWTAuthentication()
-            response = authenticator.authenticate(request)
-            if response is not None:
-                user, token = response
-                request.user = user
-            else:
+            try:
+                authenticator = JWTAuthentication()
+                response = authenticator.authenticate(request)
+                if response is not None:
+                    user, token = response
+                    request.user = user
+                else:
+                    return JsonResponse(Response(message='Unauthorized').__dict__, status=401)
+            except:
                 return JsonResponse(Response(message='Unauthorized').__dict__, status=401)
