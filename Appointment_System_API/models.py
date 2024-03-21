@@ -30,6 +30,5 @@ class Appointment(models.Model):
 
     class Meta:
         permissions = [
-            ('view_own_appointment', 'Can view own appointment'),
             ('view_other_appointment', 'Can view other appointment')
         ]

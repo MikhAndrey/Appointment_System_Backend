@@ -248,7 +248,7 @@ class AppointmentView(View):
 
 class AppointmentListView(View):
     @staticmethod
-    @has_permission('view_own_appointment')
+    @has_permission('view_appointment')
     def get(request):
         if user_has_permission(request.user, 'view_other_appointment'):
             queryset = Appointment.objects.all().order_by('id')

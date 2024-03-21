@@ -12,7 +12,7 @@ settings = LazySettings()
 class JWTAuthenticationMiddleware(MiddlewareMixin):
     def process_request(self, request):
         excluded_urls = [reverse('token_obtain_pair'), reverse('token_refresh')]
-        if request.path not in excluded_urls:
+        if request.path not in excluded_urls and "admin" not in request.path:
             try:
                 authenticator = JWTAuthentication()
                 response = authenticator.authenticate(request)
