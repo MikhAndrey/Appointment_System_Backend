@@ -30,6 +30,11 @@ DEBUG = True
 
 ALLOWED_HOSTS = ["localhost"]
 
+CHANNEL_LAYERS = {
+  'default': {
+    'BACKEND': 'channels.layers.InMemoryChannelLayer'
+  }
+}
 
 # Application definition
 
@@ -39,11 +44,13 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    'daphne',
     'django.contrib.staticfiles',
     'Appointment_System_API',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
-    'corsheaders'
+    'corsheaders',
+    'channels'
 ]
 
 MIDDLEWARE = [
@@ -101,8 +108,7 @@ SIMPLE_JWT = {
     "TOKEN_OBTAIN_SERIALIZER": "Appointment_System_API.auth.serializers.CustomTokenObtainPairSerializer",
 }
 
-WSGI_APPLICATION = 'Appointment_System_Backend.wsgi.application'
-
+ASGI_APPLICATION = 'Appointment_System_Backend.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases

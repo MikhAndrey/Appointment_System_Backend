@@ -1,5 +1,7 @@
 import json
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.contrib.auth.models import Group
 from django.core.paginator import Paginator
 from django.db import transaction
@@ -203,7 +205,9 @@ class AppointmentView(View):
             data = json.loads(request.body)
             serializer = AppointmentSerializer(data=data)
             if serializer.is_valid():
-                serializer.save()
+                appointment = serializer.save()
+                serializer = AppointmentGetSerializer(appointment)
+                send_appointment_notification('appointment.create', serializer.data)
                 response = Response(model=serializer.data, message="Appointment was created successfully")
                 return JsonResponse(response.__dict__, status=201)
             else:
@@ -222,7 +226,9 @@ class AppointmentView(View):
             appointment = Appointment.objects.get(id=id)
             serializer = AppointmentSerializer(instance=appointment, data=data)
             if serializer.is_valid():
-                serializer.save()
+                appointment = serializer.save()
+                serializer = AppointmentGetSerializer(appointment)
+                send_appointment_notification('appointment.update', serializer.data)
                 response = Response(model=serializer.data, message="Appointment was updated successfully")
                 return JsonResponse(response.__dict__, status=200)
             else:
@@ -239,13 +245,25 @@ class AppointmentView(View):
     @has_permission('delete_appointment')
     def delete(request, id):
         try:
-            department = Appointment.objects.get(id=id)
-            department.delete()
+            appointment = Appointment.objects.get(id=id)
+            appointment.delete()
+            send_appointment_notification('appointment.delete', id)
             response = Response(message="Appointment was deleted successfully")
             return JsonResponse(response.__dict__, status=200)
         except Appointment.DoesNotExist:
             response = Response(message="Appointment was not found")
             return JsonResponse(response.__dict__, status=400)
+
+
+def send_appointment_notification(message_type, data):
+    channel_layer = get_channel_layer()
+    async_to_sync(channel_layer.group_send)(
+        'appointment_notifications',
+        {
+            'type': message_type,
+            'data': data
+        }
+    )
 
 
 class AppointmentListView(View):
