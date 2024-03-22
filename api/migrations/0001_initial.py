@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
                 ('email', models.EmailField(max_length=254)),
                 ('phone', models.CharField(max_length=20)),
                 ('address', models.CharField(max_length=200)),
-                ('department', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Appointment_System_API.department')),
+                ('department', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.department')),
             ],
         ),
         migrations.CreateModel(
@@ -48,8 +48,8 @@ class Migration(migrations.Migration):
                 ('date', models.DateField()),
                 ('start', models.TimeField()),
                 ('end', models.TimeField()),
-                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Appointment_System_API.customer')),
-                ('employee', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='Appointment_System_API.employee')),
+                ('customer', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.customer')),
+                ('employee', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='api.employee')),
             ],
         ),
     ]
