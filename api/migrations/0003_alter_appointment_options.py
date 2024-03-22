@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('Appointment_System_API', '0002_remove_employee_email_remove_employee_fullname_and_more'),
+        ('api', '0002_remove_employee_email_remove_employee_fullname_and_more'),
     ]
 
     operations = [

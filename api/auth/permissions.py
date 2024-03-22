@@ -3,7 +3,7 @@ from functools import wraps
 from django.contrib.auth.models import Permission
 from django.http import JsonResponse
 
-from Appointment_System_API.response import Response
+from api.response import Response
 
 
 def get_user_permissions(user):

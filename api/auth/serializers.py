@@ -1,6 +1,6 @@
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from Appointment_System_API.auth.permissions import get_user_permissions
+from api.auth.permissions import get_user_permissions
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):

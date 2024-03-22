@@ -6,7 +6,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('Appointment_System_API', '0003_alter_appointment_options'),
+        ('api', '0003_alter_appointment_options'),
     ]
 
     operations = [

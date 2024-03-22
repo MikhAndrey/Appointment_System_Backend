@@ -13,7 +13,7 @@ from channels.routing import ProtocolTypeRouter, URLRouter
 from django.core.asgi import get_asgi_application
 from django.urls import path
 
-from Appointment_System_API.websockets.consumers import AppointmentConsumer
+from api.websockets.consumers import AppointmentConsumer
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'Appointment_System_Backend.settings')
 

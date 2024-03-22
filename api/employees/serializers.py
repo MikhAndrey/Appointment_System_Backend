@@ -1,67 +1,11 @@
 from django.contrib.auth.hashers import make_password
-from django.contrib.auth.models import User, Group
+from django.contrib.auth.models import Group, User
 from django.core.mail import send_mail
 from rest_framework import serializers
 
-from Appointment_System_API.models import Customer, Department, Employee, Appointment
+from api.departments.models import Department
+from api.employees.models import Employee
 from Appointment_System_Backend.settings import EMAIL_HOST_USER
-
-
-class GroupSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Group
-        fields = ['name']
-
-
-class CustomerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = '__all__'
-
-
-class CustomerShortSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Customer
-        fields = ['id', 'fullname']
-
-
-class DepartmentSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Department
-        fields = '__all__'
-
-
-class AppointmentGetSerializer(serializers.ModelSerializer):
-    employee = serializers.SerializerMethodField()
-    customer = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Appointment
-        fields = ['id', 'date', 'start', 'end', 'employee', 'customer']
-
-    def get_employee(self, obj: Appointment):
-        return {
-            "id": obj.employee.id,
-            "fullname": obj.employee.user.username
-        }
-
-    def get_customer(self, obj: Appointment):
-        return {
-            "id": obj.customer.id,
-            "fullname": obj.customer.fullname
-        }
-
-
-class AppointmentSerializer(serializers.ModelSerializer):
-    employeeId = serializers.PrimaryKeyRelatedField(source='employee', queryset=Employee.objects.all())
-    employeeId.default_error_messages['does_not_exist'] = 'Employee was not found'
-
-    customerId = serializers.PrimaryKeyRelatedField(source='customer', queryset=Customer.objects.all())
-    employeeId.default_error_messages['does_not_exist'] = 'Customer was not found'
-
-    class Meta:
-        model = Appointment
-        fields = ['id', 'date', 'start', 'end', 'employeeId', 'customerId']
 
 
 class EmployeeGetSerializer(serializers.ModelSerializer):

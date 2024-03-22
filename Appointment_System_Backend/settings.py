@@ -46,7 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'daphne',
     'django.contrib.staticfiles',
-    'Appointment_System_API',
+    'api',
     'rest_framework_simplejwt',
     'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
@@ -60,7 +60,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     #'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'Appointment_System_API.auth.middleware.JWTAuthenticationMiddleware',
+    'api.auth.middleware.JWTAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
@@ -105,7 +105,7 @@ SIMPLE_JWT = {
     "SIGNING_KEY": os.getenv('SIGNING_KEY'),
     "AUDIENCE": os.getenv('AUDIENCE'),
     "ISSUER": os.getenv('ISSUER'),
-    "TOKEN_OBTAIN_SERIALIZER": "Appointment_System_API.auth.serializers.CustomTokenObtainPairSerializer",
+    "TOKEN_OBTAIN_SERIALIZER": "api.auth.serializers.CustomTokenObtainPairSerializer",
 }
 
 ASGI_APPLICATION = 'Appointment_System_Backend.asgi.application'
