@@ -1,5 +1,6 @@
 import json
 
+from django.contrib.auth.models import Group
 from django.core.paginator import Paginator
 from django.db import transaction
 from django.http import JsonResponse
@@ -10,7 +11,8 @@ from Appointment_System_API.auth.permissions import has_permission, user_has_per
 from Appointment_System_API.models import Customer, Department, Employee, Appointment
 from Appointment_System_API.response import Response, PageResponse
 from Appointment_System_API.serializers import CustomerSerializer, DepartmentSerializer, \
-    EmployeeGetSerializer, AppointmentGetSerializer, AppointmentSerializer, EmployeeSerializer
+    EmployeeGetSerializer, AppointmentGetSerializer, AppointmentSerializer, EmployeeSerializer, GroupSerializer, \
+    CustomerShortSerializer, EmployeeShortSerializer
 
 
 class CustomerView(View):
@@ -357,4 +359,32 @@ class EmployeeListView(View):
         serializer = EmployeeGetSerializer(queryset, many=True)
         response = Response(model=serializer.data,
                             message="List of employees was retrieved successfully")
+        return JsonResponse(response.__dict__, status=200)
+
+
+class GroupListView(View):
+    @staticmethod
+    def get(request):
+        queryset = Group.objects.all()
+        serializer = GroupSerializer(queryset, many=True)
+        response = Response(model=serializer.data,
+                            message="List of roles was retrieved successfully")
+        return JsonResponse(response.__dict__, status=200)
+
+
+class CustomerShortListView(View):
+    @staticmethod
+    def get(request):
+        queryset = Customer.objects.all()
+        serializer = CustomerShortSerializer(queryset, many=True)
+        response = Response(model=serializer.data)
+        return JsonResponse(response.__dict__, status=200)
+
+
+class EmployeeShortListView(View):
+    @staticmethod
+    def get(request):
+        queryset = Employee.objects.all()
+        serializer = EmployeeShortSerializer(queryset, many=True)
+        response = Response(model=serializer.data)
         return JsonResponse(response.__dict__, status=200)

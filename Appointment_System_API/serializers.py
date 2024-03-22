@@ -7,10 +7,22 @@ from Appointment_System_API.models import Customer, Department, Employee, Appoin
 from Appointment_System_Backend.settings import EMAIL_HOST_USER
 
 
+class GroupSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Group
+        fields = ['name']
+
+
 class CustomerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
         fields = '__all__'
+
+
+class CustomerShortSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['id', 'fullname']
 
 
 class DepartmentSerializer(serializers.ModelSerializer):
@@ -57,10 +69,14 @@ class EmployeeGetSerializer(serializers.ModelSerializer):
 
     email = serializers.EmailField(source='user.email')
     fullname = serializers.CharField(source='user.username')
+    roles = serializers.SerializerMethodField('get_employee_roles')
+
+    def get_employee_roles(self, obj: Employee):
+        return [group.name for group in obj.user.groups.all()]
 
     class Meta:
         model = Employee
-        fields = ['id', 'fullname', 'email', 'phone', 'address', 'department']
+        fields = ['id', 'fullname', 'email', 'phone', 'address', 'department', 'roles']
 
     def get_department(self, obj: Employee):
         return {
@@ -131,3 +147,14 @@ class EmployeeSerializer(serializers.ModelSerializer):
         instance.save()
         instance.user.save()
         return instance
+
+
+class EmployeeShortSerializer(serializers.ModelSerializer):
+    fullname = serializers.SerializerMethodField('get_employee_fullname')
+
+    class Meta:
+        model = Employee
+        fields = ['id', 'fullname']
+
+    def get_employee_fullname(self, obj: Employee):
+        return obj.user.username
